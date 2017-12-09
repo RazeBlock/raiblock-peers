@@ -11,10 +11,17 @@
     "e2e": "node test/e2e/runner.js",
     "test": "npm run unit && npm run e2e",
     "lint": "eslint --ext .js,.vue src test/unit/specs test/e2e/specs",
-    "build": "node build/build.js"
+    "build": "node build/build.js",
+    "node": "nodemon ./server/index.js"
   },
   "dependencies": {
     "element-ui": "^2.0.7",
+    "koa": "^2.4.1",
+    "koa-bodyparser": "^4.2.0",
+    "koa-router": "^7.3.0",
+    "maxmind": "^2.3.0",
+    "node-fetch": "^1.7.3",
+    "query-string": "^5.0.1",
     "vue": "^2.5.2",
     "vue-router": "^3.0.1"
   },
