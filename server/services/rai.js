@@ -12,6 +12,7 @@ module.exports = {
       let arr = item.match(/\[::ffff:(\d+\.\d+\.\d+\.\d+)]:(\d+)/)
       let ipInfo = ip2location.IP2Location_get_all(arr[1])
 
+      console.log(ipInfo)
       return Object.assign({}, _.pick(ipInfo, [
         'ip', 'ip_no', 'country_short', 'country_long',
         'region', 'city', 'latitude', 'longitude', 'zipcode', 'timezone']), {
