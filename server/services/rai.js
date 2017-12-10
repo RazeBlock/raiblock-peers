@@ -1,28 +1,23 @@
+const ip2location = require('ip2location-nodejs')
+const _ = require('lodash')
 const path = require('path')
 const rpc = require('../utils/rpc')
-const maxmind = require('maxmind')
-const cityLookup = maxmind.openSync(path.resolve(__dirname, '../data/GeoLite2-City.mmdb'))
+
+ip2location.IP2Location_init(path.resolve(__dirname, '../data/IP2LOCATION-LITE-DB11.BIN'))
 
 module.exports = {
   async getPeers () {
     let {peers} = await rpc({action: 'peers'})
     return Object.keys(peers).map(item => {
       let arr = item.match(/\[.*(\d+\.\d+\.\d+\.\d+)]:(\d+)/)
-      let {city = {}, location = {}, country = {}} = cityLookup.get(arr[1]) || {}
-      city = city || {}
-      country = country || {}
-      location = location || {}
-      return {
-        ip: arr[1],
-        port: arr[2],
-        city: city.names && city.names.en,
-        latitude: location.latitude,
-        longitude: location.longitude,
-        country: {
-          iso_code: country.iso_code,
-          name: country.names && country.names.en
-        }
-      }
+      let ipInfo = ip2location.IP2Location_get_all(arr[1])
+
+      return Object.assign({}, _.pick(ipInfo, [
+        'ip', 'ip_no', 'country_short', 'country_long',
+        'region', 'city', 'latitude', 'longitude', 'zipcode', 'timezone']), {
+          port: arr[2],
+          version: peers[item]
+        })
     })
   }
 }
