@@ -9,7 +9,7 @@ module.exports = {
   async getPeers () {
     let {peers} = await rpc({action: 'peers'})
     return Object.keys(peers).map(item => {
-      let arr = item.match(/\[.*(\d+\.\d+\.\d+\.\d+)]:(\d+)/)
+      let arr = item.match(/\[::ffff:(\d+\.\d+\.\d+\.\d+)]:(\d+)/)
       let ipInfo = ip2location.IP2Location_get_all(arr[1])
 
       return Object.assign({}, _.pick(ipInfo, [
