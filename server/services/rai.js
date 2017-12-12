@@ -8,16 +8,15 @@ ip2location.IP2Location_init(path.resolve(__dirname, '../data/IP2LOCATION-LITE-D
 module.exports = {
   async getPeers () {
     let {peers} = await rpc({action: 'peers'})
-    return Object.keys(peers).map(item => {
+    return _.uniq(Object.keys(peers)).map(item => {
       let arr = item.match(/\[::ffff:(\d+\.\d+\.\d+\.\d+)]:(\d+)/)
       let ipInfo = ip2location.IP2Location_get_all(arr[1])
-
-      console.log(ipInfo)
       return Object.assign({}, _.pick(ipInfo, [
         'ip', 'ip_no', 'country_short', 'country_long',
         'region', 'city', 'latitude', 'longitude', 'zipcode', 'timezone']), {
           port: arr[2],
-          version: peers[item]
+          version: peers[item],
+          id: item + peers[item]
         })
     })
   }

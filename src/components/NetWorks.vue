@@ -3,10 +3,16 @@
       <div class="map-wrapper">
         <v-map :zoom="zoom" :center="center">
           <v-tilelayer :url="url" :attribution="attribution"></v-tilelayer>
-          <v-marker v-for="item in markers" :key="item.ip" :lat-lng="item.marker" :title="item.ip" :draggable="false">
-            <v-popup :content="renderPopup(item)"></v-popup>
+          <v-marker v-for="item in markers" :key="item.id" :lat-lng="item.marker" :title="item.ip" :draggable="false">
+            <v-popup :key="item.id" :content="renderPopup(item)"></v-popup>
           </v-marker>
         </v-map>
+        <div class="map-loading">
+          <div v-loading="getPeersPending" element-loading-background="transparent" element-loading-spinner="el-icon-loading"></div>
+        </div>
+        <div class="peer-count-marker">
+          Peers: {{markers.length}}
+        </div>
       </div>
     </div>
 </template>
@@ -21,11 +27,16 @@
           center: [47.413220, -1.219482],
           url: 'http://{s}.tile.osm.org/{z}/{x}/{y}.png',
           attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
-          markers: []
+          markers: [],
+          getPeersPending: false
         }
       },
       created () {
         this.getPeers()
+        this.startInterval()
+      },
+      destroyed () {
+        clearInterval(this._interval)
       },
       methods: {
         renderPopup (item) {
@@ -35,7 +46,14 @@
                     <div>Country: ${item.country_long}</div>
                     <div>City: ${item.city}</div>`
         },
+        startInterval () {
+          this._interval = setInterval(() => {
+            this.getPeers()
+          }, 1000 * 5)
+        },
         getPeers () {
+          if (this.getPeersPending) return
+          this.getPeersPending = true
           fetch('/api/peers')
             .then(data => {
               this.markers = data.map(item => {
@@ -44,17 +62,11 @@
                   marker: window.L.latLng(item.latitude, item.longitude)
                 }
               })
-              // setTimeout(() => {
-              //   this.markers = this.markers.map(item => {
-              //     return {
-              //       ...item,
-              //       show: true
-              //     }
-              //   })
-              // }, 2000)
+              this.getPeersPending = false
             })
             .catch(err => {
               console.warn(err)
+              this.getPeersPending = false
             })
         }
       }
@@ -65,6 +77,26 @@
   .map-wrapper {
     height: 500px;
     width: 100%;
+    .map-loading {
+      line-height: 30px;
+      position: absolute;
+      top: 80px;
+      right: 20px;
+      z-index: 111111;
+      color: #303030;
+      border-radius: 4px;
+    }
+    .peer-count-marker {
+      line-height: 30px;
+      position: absolute;
+      padding: 0px 15px;
+      top: 500px + 20px;
+      left: 10px;
+      z-index: 111111;
+      background: #303030;
+      color: #ffeb3b;
+      border-radius: 4px;
+    }
   }
 
   .text {
