@@ -2,6 +2,10 @@
 
 > A Vue.js project
 
+## Set Env
+
+You should install node.js 9.xx.xx  npm 5.xx.xx
+
 ## Build Setup
 
 ``` bash
