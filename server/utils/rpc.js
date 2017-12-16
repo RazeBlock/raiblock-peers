@@ -2,7 +2,7 @@ const _ = require('lodash')
 const fetch = require('node-fetch')
 
 const cache = {}
-const cacheTime = 1000 * 2
+const cacheTime = 1000
 
 module.exports = function (body) {
   let {action} = body || {}
