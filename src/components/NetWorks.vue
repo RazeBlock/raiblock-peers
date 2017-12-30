@@ -49,7 +49,7 @@
         startInterval () {
           this._interval = setInterval(() => {
             this.getPeers()
-          }, 1000 * 3)
+          }, 1000 * 10)
         },
         getPeers () {
           if (this.getPeersPending) return
